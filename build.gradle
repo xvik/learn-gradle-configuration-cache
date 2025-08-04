@@ -1,0 +1,63 @@
+plugins {
+    id 'java-gradle-plugin'
+}
+
+group = 'ru.vyarus'
+version = '1.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = 17
+}
+
+wrapper {
+    gradleVersion = '8.13'
+    distributionType = Wrapper.DistributionType.BIN
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'org.assertj:assertj-core:3.27.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+gradlePlugin {
+    plugins {
+        create("sample1") {
+            id = "ru.vyarus.sample1"
+            implementationClass = "ru.vyarus.gradle.plugin.sample1.Sample1Plugin"
+        }
+        create("sample2") {
+            id = "ru.vyarus.sample2"
+            implementationClass = "ru.vyarus.gradle.plugin.sample2.Sample2Plugin"
+        }
+        create("sample3") {
+            id = "ru.vyarus.sample3"
+            implementationClass = "ru.vyarus.gradle.plugin.sample3.Sample3Plugin"
+        }
+        create("sample3.singleton") {
+            id = "ru.vyarus.sample3.singleton"
+            implementationClass = "ru.vyarus.gradle.plugin.sample3.singleton.Sample3SingletonPlugin"
+        }
+        create("sample4") {
+            id = "ru.vyarus.sample4"
+            implementationClass = "ru.vyarus.gradle.plugin.sample4.Sample4Plugin"
+        }
+        create("sample4.value") {
+            id = "ru.vyarus.sample4.value"
+            implementationClass = "ru.vyarus.gradle.plugin.sample4.value.Sample4ValuePlugin"
+        }
+        create("sample5") {
+            id = "ru.vyarus.sample5"
+            implementationClass = "ru.vyarus.gradle.plugin.sample5.Sample5Plugin"
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}

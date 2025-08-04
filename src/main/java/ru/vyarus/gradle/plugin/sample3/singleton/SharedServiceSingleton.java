@@ -1,0 +1,48 @@
+package ru.vyarus.gradle.plugin.sample3.singleton;
+
+import org.gradle.api.provider.Property;
+import org.gradle.api.services.BuildService;
+import org.gradle.api.services.BuildServiceParameters;
+import org.gradle.tooling.events.FinishEvent;
+import org.gradle.tooling.events.OperationCompletionListener;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+/**
+ * @author Vyacheslav Rusakov
+ * @since 03.08.2025
+ */
+public abstract class SharedServiceSingleton implements BuildService<SharedServiceSingleton.Params>, AutoCloseable,
+        OperationCompletionListener {
+
+    public String extParam;
+    // tasks might be executed in parallel (this simply avoids ConcurrentModificationException)
+    public List<String> list = new CopyOnWriteArrayList<>();
+
+    public SharedServiceSingleton() {
+        System.out.println("Shared service created " + System.identityHashCode(this) + "@");
+    }
+
+    public interface Params extends BuildServiceParameters {
+        Property<String> getExtParam();
+    }
+
+    @Override
+    public void onFinish(FinishEvent finishEvent) {
+        System.out.println("Finish event: " + finishEvent.getDescriptor().getName() + " caught on service " + this);
+    }
+
+    @Override
+    public String toString() {
+        return System.identityHashCode(this) + "@" + list.toString()
+                + ", param: " + getParameters().getExtParam().getOrNull()
+                + ", direct param: " + extParam;
+    }
+
+    // IMPORTANT: gradle could close service at any time and start a new instance!
+    @Override
+    public void close() throws Exception {
+        System.out.println("Shared service closed: " + System.identityHashCode(this));
+    }
+}
