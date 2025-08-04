@@ -73,3 +73,22 @@ All tests end with `KitTest` because usually gradle plugin projects also contain
 tests. There are no such tests, but convention preserved.
 
 AssertJ used because of its great errors output on strings comparison.
+
+## Configuration cache errors
+
+Just in case, when there is a configuration cache problem, gradle would idicate it like this:
+
+```
+> Task :sample5Task
+Task executed: junit12045893691932608949
+
+1 problem was found storing the configuration cache.
+- Task `:sample5Task` of type `ru.vyarus.gradle.plugin.sample5.Sample5Task`: invocation of 'Task.project' at execution time is unsupported.
+  See https://docs.gradle.org/8.13/userguide/configuration_cache.html#config_cache:requirements:use_project_during_execution
+
+```
+
+During the real plugin project migration, the target is to aliminate all such errors.
+
+Note that different errors might appear in different cases: all plugin execution "branches" must be checked for 
+configuration cache compatibility (gradle will not print all warnings at once - only for actually executed code). 
