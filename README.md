@@ -1,4 +1,6 @@
 # Learn gradle configuration cache by examples
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://www.opensource.org/licenses/MIT)
+[![CI](https://github.com/xvik/learn-gradle-configuration-cache/actions/workflows/CI.yml/badge.svg)](https://github.com/xvik/learn-gradle-configuration-cache/actions/workflows/CI.yml)
 
 Repository contains various samples to show the behavior of Gradle configuration cache.
 You can use it as a learning playground: each sample could be modified and re-run (with test). 
