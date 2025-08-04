@@ -4,30 +4,7 @@ At runtime, method calls remain as-is, but calls to providers are replaced with 
 
 A plugin with two method calls and one provider call inside the task's doLast method:
 
-```java
-public class Sample4Plugin implements Plugin<Project> {
-
-    @Override
-    public void apply(Project project) {
-        project.getTasks().register("task1").configure(task -> {
-            Provider<String> provider = project.provider(() -> {
-                String res = String.valueOf(project.findProperty("startTime"))
-                System.out.println("[configuration] Provider called: " + res);
-                return res;
-            });
-            task.doLast(task1 -> {
-                System.out.println("Task exec / static value: " + computeMessage("static"));
-                System.out.println("Task exec / provider value: " + computeMessage("provider " + provider.get()));
-            });
-        });
-    }
-
-    private String computeMessage(String source) {
-        System.out.println("called computeMessage('" + source + "')");
-        return "Computed message: " + source;
-    }
-}
-```
+https://github.com/xvik/learn-gradle-configuration-cache/blob/d72120bba0c73231e509165665e8482d14128218/src/main/java/ru/vyarus/gradle/plugin/sample4/Sample4Plugin.java#L13-L34
 
 `startTime` property configured from command line to be able to change it easily
 
@@ -125,33 +102,11 @@ Configuration cache entry stored.
 
 Gradle provides `ValueSource` which could be used for "always called" providers implementation:
 
-```java
-public abstract class NonCacheableValue implements ValueSource<String, ValueSourceParameters.None> {
-
-    @Override
-    public @Nullable String obtain() {
-        String val = System.getProperty("foo");
-        System.out.println("NonCacheableValue: " + val);
-        return val;
-    }
-}
-```
+https://github.com/xvik/learn-gradle-configuration-cache/blob/d72120bba0c73231e509165665e8482d14128218/src/main/java/ru/vyarus/gradle/plugin/sample4/value/NonCacheableValue.java#L11-L19
 
 Use it instead of the previous provider:
 
-```java
- @Override
-public void apply(Project project) {
-    project.getTasks().register("task1").configure(task -> {
-        final Provider<String> provider = project.getProviders()
-                .of(NonCacheableValue.class, noneValueSourceSpec -> {});
-        task.doLast(task1 -> {
-            System.out.println("Task exec / static value: " + computeMessage("static " + System.getProperty("foo")));
-            System.out.println("Task exec / provider value: " + computeMessage("provider " + provider.get()));
-        });
-    });
-}
-```
+https://github.com/xvik/learn-gradle-configuration-cache/blob/d72120bba0c73231e509165665e8482d14128218/src/main/java/ru/vyarus/gradle/plugin/sample4/value/Sample4ValuePlugin.java#L16-L25
 
 Run with cache enabled: `task1 -Dfoo=1 --configuration-cache --configuration-cache-problems=warn`
 

@@ -8,36 +8,11 @@ some internal staff, which should not be exposed as a public api.
 
 Task:
 
-```java
-public abstract class Sample5Task extends DefaultTask {
-
-    private final String projectName;
-
-    public Sample5Task() {
-        // this is configuration time! project access allowed!
-        projectName = getProject().getName();
-        System.out.println("[configuration] Task created");
-    }
-
-    @TaskAction
-    public void run() {
-        // project can't be accessed at runtime
-        System.out.println("Task executed: " + projectName);
-    }
-}
-```
+https://github.com/xvik/learn-gradle-configuration-cache/blob/d72120bba0c73231e509165665e8482d14128218/src/main/java/ru/vyarus/gradle/plugin/sample5/Sample5Task.java#L10-L25
 
 Plugin:
 
-```java
-public abstract class Sample5Plugin implements Plugin<Project> {
-
-    @Override
-    public void apply(Project project) {
-          project.getTasks().register("sample5Task", Sample5Task.class);
-    }
-}
-```
+https://github.com/xvik/learn-gradle-configuration-cache/blob/d72120bba0c73231e509165665e8482d14128218/src/main/java/ru/vyarus/gradle/plugin/sample5/Sample5Plugin.java#L12-L18
 
 Run with cache enabled: `sample5Task --configuration-cache --configuration-cache-problems=warn`
 

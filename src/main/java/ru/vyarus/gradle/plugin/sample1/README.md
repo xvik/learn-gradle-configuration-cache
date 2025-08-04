@@ -2,85 +2,19 @@
 
 Extension:
 
-```java
-public class Sample1Extension {
-    public String message = "Default";
-}
-```
+https://github.com/xvik/learn-gradle-configuration-cache/blob/d72120bba0c73231e509165665e8482d14128218/src/main/java/ru/vyarus/gradle/plugin/sample1/Sample1Extension.java#L7-L10
 
 Task:
 
-```java
-public abstract class Sample1Task extends DefaultTask {
-
-    @Input
-    abstract Property<String> getMessage();
-
-    @Input
-    abstract Property<String> getMessage2();
-
-    public String value;
-    private String privateValue;
-
-    public Sample1Task() {
-        System.out.println("[configuration] Task created");
-        privateValue = "set";
-    }
-
-    @TaskAction
-    public void run() {
-        System.out.println("Task executed: param1=" + getMessage().get()
-                + ", param2=" + getMessage2().get()
-                + ", public field=" + value
-                + ", private field=" + privateValue);
-    }
-}
-```
+https://github.com/xvik/learn-gradle-configuration-cache/blob/d72120bba0c73231e509165665e8482d14128218/src/main/java/ru/vyarus/gradle/plugin/sample1/Sample1Task.java#L12-L34
 
 Plugin:
 
-```java
-public abstract class Sample1Plugin implements Plugin<Project> {
-
-    @Override
-    public void apply(Project project) {
-        System.out.println("[configuration] Plugin applied");
-        // register configuration extension
-        final Sample1Extension ext = project.getExtensions().create("sample1", Sample1Extension.class);
-
-        // register custom task
-        project.getTasks().register("sample1Task", Sample1Task.class, task -> {
-            // task configured from extension, by default (note provider usage for lazy initialization)
-            task.getMessage().convention(project.provider(() -> ext.message));
-            task.getMessage2().convention("Default");
-            task.value = "assigned value";
-            System.out.println("[configuration] Task configured. Ext message: " + ext.message);
-
-            // the only line that works also under the configuration cache
-            task.doFirst(task1 -> System.out.println("Before task: " + ext.message));
-        });
-        // task registered but not yet configured (user configuration also not yet applied)
-        System.out.println("[configuration] Task registered. Ext message: " + ext.message);
-
-        // afterEvaluate often used by plugins as the first point where user configuration applied
-        project.afterEvaluate(p -> System.out.println("[configuration] Project evaluated. Ext message: " + ext.message));
-
-        // custom (lazy) task configuration
-        project.getTasks().withType(Sample1Task.class).configureEach(task -> {
-            System.out.println("[configuration] Task delayed configuration. Ext message: " + ext.message);
-            task.getMessage2().set("Custom");
-        });
-    }
-}
-```
+https://github.com/xvik/learn-gradle-configuration-cache/blob/d72120bba0c73231e509165665e8482d14128218/src/main/java/ru/vyarus/gradle/plugin/sample1/Sample1Plugin.java#L12-L43
 
 Configuration:
 
-```
-sample1 {
-    message = "Configured!"
-}
-```
+https://github.com/xvik/learn-gradle-configuration-cache/blob/d72120bba0c73231e509165665e8482d14128218/src/test/java/ru/vyarus/gradle/plugin/sample1/Sample1PluginKitTest.java#L19-L26
 
 Run task with configuration cache enabled:  `sample1Task --configuration-cache`
 

@@ -2,56 +2,11 @@
 
 Object, referenced in multiple tasks:
 
-```java
-public class SharedState {
-
-    // show how externally assigned values survive
-    public String direct;
-    public String configTime;
-    public List<String> list = new ArrayList<>();
-
-    public SharedState() {
-        System.out.println("Shared state created: " + System.identityHashCode(this));
-    }
-
-    @Override
-    public String toString() {
-        return System.identityHashCode(this) + "@" + list.toString() + ", direct=" + direct
-                + ", configTime=" + configTime;
-    }
-}
-```
+https://github.com/xvik/learn-gradle-configuration-cache/blob/d72120bba0c73231e509165665e8482d14128218/src/main/java/ru/vyarus/gradle/plugin/sample2/SharedState.java#L10-L26
 
 Plugin, declaring two tasks, referencing THE SAME object instance:
 
-```java
-public abstract class Sample2Plugin implements Plugin<Project> {
-
-    @Override
-    public void apply(Project project) {
-        final Sample1Extension ext = project.getExtensions().create("sample2", Sample1Extension.class);
-        // some object, common for two tasks
-        final SharedState state = new SharedState();
-        state.direct = "Custom";
-        System.out.println("Initial shared object: " + state);
-
-        // delayed configuration from extension
-        project.afterEvaluate(p -> state.configTime = ext.message);
-
-        project.getTasks().register("task1").configure(task ->
-                task.doLast(task1 -> {
-                    state.list.add("Task 1");
-                    System.out.println("Task 1 shared object: " + state);
-                }));
-
-        project.getTasks().register("task2").configure(task ->
-                task.doLast(task1 -> {
-                    state.list.add("Task 2");
-                    System.out.println("Task 2 shared object: " + state);
-                }));
-    }
-}
-```
+https://github.com/xvik/learn-gradle-configuration-cache/blob/d72120bba0c73231e509165665e8482d14128218/src/main/java/ru/vyarus/gradle/plugin/sample2/Sample2Plugin.java#L14-L39
 
 Run tasks: `task1 task2`
 

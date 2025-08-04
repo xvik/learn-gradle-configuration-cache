@@ -10,90 +10,17 @@ The workaround is to use gradle build services: basically it's the same as share
 
 Simple extension (to see how configuration values apply):
 
-```java
-public class Sample3Extension {
-    public String message = "Default";
-}
-```
+https://github.com/xvik/learn-gradle-configuration-cache/blob/d72120bba0c73231e509165665e8482d14128218/src/main/java/ru/vyarus/gradle/plugin/sample3/Sample3Extension.java#L7-L9
 
 Service:
 
-```java
-public abstract class SharedService implements BuildService<SharedService.Params>, AutoCloseable {
-
-    public String extParam;
-    // tasks might be executed in parallel (this simply avoids ConcurrentModificationException)
-    public List<String> list = new CopyOnWriteArrayList<>();
-
-    public SharedService() {
-        System.out.println("Shared service created " + System.identityHashCode(this) + "@");
-    }
-
-    public interface Params extends BuildServiceParameters {
-        Property<String> getExtParam();
-    }
-
-    @Override
-    public String toString() {
-        return System.identityHashCode(this) + "@" + list.toString()
-                + ", param: " + getParameters().getExtParam().getOrNull()
-                + ", direct param: " + extParam;
-    }
-
-    // IMPORTANT: gradle could close service at any time and start a new instance!
-    @Override
-    public void close() throws Exception {
-        System.out.println("Shared service closed: " + System.identityHashCode(this));
-    }
-}
-```
+https://github.com/xvik/learn-gradle-configuration-cache/blob/d72120bba0c73231e509165665e8482d14128218/src/main/java/ru/vyarus/gradle/plugin/sample3/SharedService.java#L14-L41
 
 Note that the same extension parameter is applied as service parameter and directly into property (to see the difference).
 
 Plugin:
 
-```java
-public abstract class Sample3Plugin implements Plugin<Project> {
-
-    @Override
-    public void apply(Project project) {
-        final Sample3Extension ext = project.getExtensions().create("sample3", Sample3Extension.class);
-        // IMPORTANT: service not created at this moment! It's just a provider
-        // It is also important to not resolve it too early because parameters might be initialized with defaults
-        // (user-defined configuration might not be applied to extension yet)
-        final Provider<SharedService> service = project.getGradle().getSharedServices().registerIfAbsent(
-                "service", SharedService.class, spec -> {
-                    // configuration value set with parameter
-                    spec.getParameters().getExtParam().convention(project.provider(() -> ext.message));
-                });
-
-        // configuration value set DIRECTLY (to show difference)
-        project.afterEvaluate(p -> {
-            service.get().extParam = ext.message;
-            System.out.println("[configuration] Project evaluated. Direct assigning: " + ext.message + " to service " + service.get() + ")");
-        });
-
-        project.getTasks().register("task1").configure(task ->
-                task.doLast(task1 -> {
-                    final SharedService sharedService = service.get();
-                    sharedService.list.add("Task 1");
-                    System.out.println("Task 1 shared object: " + sharedService);
-                }));
-
-        project.getTasks().register("task2").configure(task -> {
-            // For predictable execution sequence (simpler to validate in test).
-            // Without it, tasks will run concurrently!
-            task.mustRunAfter("task1");
-            
-            task.doLast(task1 -> {
-                final SharedService sharedService = service.get();
-                sharedService.list.add("Task 2");
-                System.out.println("Task 2 shared object: " + sharedService);
-            });
-        });
-    }
-}
-```
+https://github.com/xvik/learn-gradle-configuration-cache/blob/d72120bba0c73231e509165665e8482d14128218/src/main/java/ru/vyarus/gradle/plugin/sample3/Sample3Plugin.java#L13-L52
 
 Running without configuration cache: `task1 task2`
 
@@ -166,7 +93,7 @@ There is a way to achieve a real singleton: service must listen tasks execution.
 gradle would not now when to close service (because it's not used by tasks) and so the same
 instance will survive within the entire build.
 
-Service implements `OperationCompletionListener`:
+Service [implements `OperationCompletionListener`](https://github.com/xvik/learn-gradle-configuration-cache/blob/master/src/main/java/ru/vyarus/gradle/plugin/sample3/singleton/SharedServiceSingleton.java):
 
 ```java
 public abstract class SharedServiceSingleton implements BuildService<SharedServiceSingleton.Params>, AutoCloseable,
@@ -181,7 +108,7 @@ public abstract class SharedServiceSingleton implements BuildService<SharedServi
 }
 ```
 
-And plugin must register it as listener:
+And plugin must [register it as listener](https://github.com/xvik/learn-gradle-configuration-cache/blob/master/src/main/java/ru/vyarus/gradle/plugin/sample3/singleton/Sample3SingletonPlugin.java):
 
 ```java
 public abstract class Sample3SingletonPlugin implements Plugin<Project> {
