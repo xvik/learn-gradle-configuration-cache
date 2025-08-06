@@ -1,14 +1,55 @@
-# 4. Method calls are not cached, but providers do
+# 4. Providers cached, method calls not
 
-At runtime, method calls remain as-is, but calls to providers are replaced with direct value.
+As we have seen in [sample 1](../sample1), objects referenced from runtime blocks would be serialized.
+Usually, this is the main problem for plugin authors - to avoid redundant serialization.
+Here we will see some additional runtime blocks serialization aspects. 
 
-A plugin with two method calls and one provider call inside the task's doLast method:
+Inside runtime blocks:
 
-https://github.com/xvik/learn-gradle-configuration-cache/blob/d72120bba0c73231e509165665e8482d14128218/src/main/java/ru/vyarus/gradle/plugin/sample4/Sample4Plugin.java#L13-L34
+* Method calls remain as-is 
+* Calls to providers are replaced with direct value.
+* `ValueSource` values not cached
 
-`startTime` property configured from command line to be able to change it easily
+## Plugin
 
-Run with cache enabled: `task1 -PstartTime=1 --configuration-cache --configuration-cache-problems=warn`
+[Plugin](Sample4Plugin.java) with two method calls and one provider call inside the task's `doLast` block:
+
+```java
+public class Sample4Plugin implements Plugin<Project> {
+
+    @Override
+    public void apply(Project project) {
+        project.getTasks().register("task1").configure(task -> {
+            Provider<String> provider = project.provider(() -> {
+                String res = String.valueOf(project.findProperty("startTime"));
+                System.out.println("[configuration] Provider called: " + res);
+                return res;
+            });
+            task.doLast(task1 -> {
+                System.out.println("Task exec / static value: " + computeMessage("static"));
+                System.out.println("Task exec / provider value: " + computeMessage("provider " + provider.get()));
+            });
+        });
+    }
+
+    private String computeMessage(String source) {
+        System.out.println("called computeMessage('" + source + "')");
+        return "Computed message: " + source;
+    }
+}
+```
+
+`startTime` property assumed to be set in build script (or through command line).
+
+## Test
+
+[Test](/src/test/java/ru/vyarus/gradle/plugin/sample4/Sample4PluginKitTest.java) would 
+use the command line to specify a custom property value to see if cache will invalidate
+when the property value changes.
+
+### Configuration cache entry creation
+
+[Run](/src/test/java/ru/vyarus/gradle/plugin/sample4/Sample4PluginKitTest.java:L31) with cache enabled: `task1 -PstartTime=1 --configuration-cache --configuration-cache-problems=warn`
 
 ```
 Calculating task graph as no cached configuration is available for tasks: task1
@@ -25,9 +66,11 @@ BUILD SUCCESSFUL in 3s
 Configuration cache entry stored.
 ```
 
-Provider and methods were called.
+Provider was called to calculate value.
 
-Run from cache: `task1 -PstartTime=1 --configuration-cache --configuration-cache-problems=warn`
+### Run from cache
+
+[Run](/src/test/java/ru/vyarus/gradle/plugin/sample4/Sample4PluginKitTest.java:L42) from cache: `task1 -PstartTime=1 --configuration-cache --configuration-cache-problems=warn`
 
 ```
 Reusing configuration cache.
@@ -43,13 +86,24 @@ BUILD SUCCESSFUL in 82ms
 Configuration cache entry reused.
 ```
 
-Provider value cacheв, methods called. So Provider is not for "cache avoidance" but
-for complex data extractions encapsulation so gradle could cache only its value.
+* Provider value **cached** (no provider call)
+* Methods called (see `computeMessage` method logs). 
 
-Note that `computeMessage` method is still called.
+`Provider` is not for "cache avoidance" but for complex data extractions encapsulation, so gradle could 
+cache only its value.
 
-And now change property value (note that special gradle providers for properties were not used!):
+Overall, **provider is your best friend** with configuration cache. Any custom block,
+failed to serialize (using too heavy external objects), could always be extracted from runtime
+with `project.provider(() -> // some computations here)`, which would be called at 
+configuration time and value cached.
 
+Of course, there are possible side effects, like working with system properties or relying
+on other runtime state, but there are [ways to workaround it](https://docs.gradle.org/current/userguide/configuration_cache_requirements.html#config_cache:requirements:reading_sys_props_and_env_vars).
+
+### Run with cache invalidation
+
+[Run](/src/test/java/ru/vyarus/gradle/plugin/sample4/Sample4PluginKitTest.java:L42) again, but with different property value
+(configuration cache record already exists):
 `task1 -PstartTime=2 --configuration-cache --configuration-cache-problems=warn`
 
 ```
@@ -67,21 +121,23 @@ BUILD SUCCESSFUL in 108ms
 Configuration cache entry stored.
 ```
 
-Cache invalidated, the result is correct.
+Cache **invalidated**, the result is correct (because gradle is aware of its properties, 
+but invalidation wouldn't work with [system properties or environment variables](https://docs.gradle.org/current/userguide/configuration_cache_requirements.html#config_cache:requirements:reading_sys_props_and_env_vars)). 
 
-### Build file changes
+## Build file property
 
-If property would be declared inside build file:
-
-```groovy
-ext.startTime = 1
-```
-
-Then, changing the property value would also lead to cache invalidation:
+The same behavior would be for property defined inside the build file (and chane after cache record creation):
 
 ```groovy
+plugins {
+    id 'java'
+    id 'ru.vyarus.sample4'
+}
+
 ext.startTime = 2
 ```
+
+[Run](/src/test/java/ru/vyarus/gradle/plugin/sample4/Sample4PluginKitTest.java:L119) with the existing cache record:
 
 ```
 Calculating task graph as configuration cache cannot be reused because file 'build.gradle' has changed.
@@ -98,17 +154,65 @@ BUILD SUCCESSFUL in 131ms
 Configuration cache entry stored.
 ```
 
-### Always called "provider"
+Cache also invalidated.
 
-Gradle provides `ValueSource` which could be used for "always called" providers implementation:
+## Always called "provider"
 
-https://github.com/xvik/learn-gradle-configuration-cache/blob/d72120bba0c73231e509165665e8482d14128218/src/main/java/ru/vyarus/gradle/plugin/sample4/value/NonCacheableValue.java#L11-L19
+As we have seen, `Provider` value is cached, but, if you need to always calculate the value,
+gradle provides `ValueSource`:
 
-Use it instead of the previous provider:
+### Non cacheable value
 
-https://github.com/xvik/learn-gradle-configuration-cache/blob/d72120bba0c73231e509165665e8482d14128218/src/main/java/ru/vyarus/gradle/plugin/sample4/value/Sample4ValuePlugin.java#L16-L25
+[ValueSource implementation](value/NonCacheableValue.java):
 
-Run with cache enabled: `task1 -Dfoo=1 --configuration-cache --configuration-cache-problems=warn`
+```java
+public abstract class NonCacheableValue implements ValueSource<String, ValueSourceParameters.None> {
+
+    @Override
+    public @Nullable String obtain() {
+        String val = System.getProperty("foo");
+        System.out.println("NonCacheableValue: " + val);
+        return val;
+    }
+}
+```
+
+Here computed value relies on system property and so must be checked on each run.  
+
+### Updated plugin
+
+[Plugin](value/Sample4ValuePlugin.java) now use this value instead of the provider:
+
+```java
+public class Sample4ValuePlugin implements Plugin<Project> {
+
+    @Override
+    public void apply(Project project) {
+        project.getTasks().register("task1").configure(task -> {
+            final Provider<String> provider = project.getProviders()
+                    .of(NonCacheableValue.class, noneValueSourceSpec -> {});
+            task.doLast(task1 -> {
+                System.out.println("Task exec / static value: " + computeMessage("static " + System.getProperty("foo")));
+                System.out.println("Task exec / provider value: " + computeMessage("provider " + provider.get()));
+            });
+        });
+    }
+
+    private String computeMessage(String source) {
+        System.out.println("called computeMessage('" + source + "')");
+        return "Computed message: " + source;
+    }
+}
+```
+
+### Value test
+
+[Test](/src/test/java/ru/vyarus/gradle/plugin/sample4/value/Sample4ValuePluginKitTest.java)
+would run updated plugin (with value instead of provider).
+
+#### Configuration cache entry creation
+
+[Run](/src/test/java/ru/vyarus/gradle/plugin/sample4/value/Sample4ValuePluginKitTest.java:L31) with cache enabled: `task1 -Dfoo=1 --configuration-cache --configuration-cache-problems=warn`
 
 ```
 Calculating task graph as no cached configuration is available for tasks: task1
@@ -125,7 +229,11 @@ BUILD SUCCESSFUL in 3s
 Configuration cache entry stored.
 ```
 
-Run from cache: `task1 -Dfoo=1 --configuration-cache --configuration-cache-problems=warn`
+Note that value was called not under configuration phase, but at runtime.
+
+#### Run from cache
+
+[Run](/src/test/java/ru/vyarus/gradle/plugin/sample4/value/Sample4ValuePluginKitTest.java:L42) from cache: `task1 -Dfoo=1 --configuration-cache --configuration-cache-problems=warn`
 
 ```
 Reusing configuration cache.
@@ -142,7 +250,11 @@ BUILD SUCCESSFUL in 79ms
 Configuration cache entry reused.
 ```
 
-Run with different property value: `task1 -Dfoo=2 --configuration-cache --configuration-cache-problems=warn`
+`ValueSource` is **called** under configuration cache
+
+### Run with different property value
+
+[Run](/src/test/java/ru/vyarus/gradle/plugin/sample4/value/Sample4ValuePluginKitTest.java:L52) with different property value: `task1 -Dfoo=2 --configuration-cache --configuration-cache-problems=warn`
 
 ```
 Reusing configuration cache.
@@ -157,9 +269,11 @@ Task exec / provider value: Computed message: provider 2
 BUILD SUCCESSFUL in 44ms
 ```
 
-No cache invalidation performed because changed value does not affect configuration phase,
-but still, new value applied.
+**No cache invalidation** performed because the changed value does not affect configuration phase,
+but still, a new value applied.
 
-Note: in this example, custom value usage looks useless and it is! The example just shows
-how providers are called and how to do always called propvider. ValueSource could be
-very useful in configuration time (when gradle cache would be too aggressive).
+Note that the static value was also updated. Most likely it's some "gradle smartness" because, in theory, it should cache it.
+
+Custom value usage looks useless in this example, and it is (there are custom providers for such cases)! 
+The example just shows how providers are called and how to do "always called" provider. `ValueSource` 
+could be very useful when gradle cache would be too aggressive.
