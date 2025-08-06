@@ -106,7 +106,7 @@ public abstract class Sample1Plugin implements Plugin<Project> {
 Almost all plugin code would not be executed under the configuration cache: 
 all output with `[configuration]` prefix indicates configuration phase execution.
 
-The only plugin line executed under the configuration cache would be `task.doFirst(...)` block: 
+The only plugin line executed under the configuration cache would be `task.doFirst(...)` block. 
 
 ## Test
 
