@@ -6,7 +6,7 @@ it would not be the same object at runtime (**even on the first run!**) due to s
 
 ## Shared object
 
-Here is a [special object](src/main/java/ru/vyarus/gradle/plugin/sample2/SharedState.java)
+Here is a [special object](SharedState.java)
 used in multiple tasks:
 
 ```java
@@ -33,7 +33,7 @@ To string would be used to show object state in console (`System.identityHashCod
 
 ## Extension
 
-Simple [extension](src/main/java/ru/vyarus/gradle/plugin/sample2/Sample2Extension.java) used 
+Simple [extension](Sample2Extension.java) used 
 to show if the state object could preserve state, assigned from the extension (user input).
 
 ```java
@@ -44,7 +44,7 @@ public class Sample2Extension {
 
 ## Plugin
 
-[Plugin](src/main/java/ru/vyarus/gradle/plugin/sample2/Sample2Plugin.java) 
+[Plugin](Sample2Plugin.java) 
 declares two tasks, referencing THE SAME object instance:
 
 ```java
@@ -86,7 +86,7 @@ Each task modifies `list` state inside the shared object and then prints its sta
 
 ## Test
 
-[Test](src/test/java/ru/vyarus/gradle/plugin/sample2/Sample2PluginKitTest.java)
+[Test](/src/test/java/ru/vyarus/gradle/plugin/sample2/Sample2PluginKitTest.java)
 configure plugin extension:
 
 ```java
@@ -102,7 +102,7 @@ sample2 {
 
 ### Simple run
 
-First, let's [run](src/test/java/ru/vyarus/gradle/plugin/sample2/Sample2PluginKitTest.java:L35) it without the configuration cache enabled:
+First, let's [run](/src/test/java/ru/vyarus/gradle/plugin/sample2/Sample2PluginKitTest.java:L35) it without the configuration cache enabled:
 `task1 task2`
 
 ```
@@ -124,7 +124,7 @@ The same instance used everywhere, as expected.
 
 ### Configuration cache entry creation
 
-Now [run](src/test/java/ru/vyarus/gradle/plugin/sample2/Sample2PluginKitTest.java:L43) with the configuration cache enabled: 
+Now [run](/src/test/java/ru/vyarus/gradle/plugin/sample2/Sample2PluginKitTest.java:L43) with the configuration cache enabled: 
 `task1 task2 --configuration-cache`
 
 ```
@@ -154,7 +154,7 @@ You can see:
 
 ### Run from cache
 
-[Run](src/test/java/ru/vyarus/gradle/plugin/sample2/Sample2PluginKitTest.java:L54) again: `task1 task2 --configuration-cache`
+[Run](/src/test/java/ru/vyarus/gradle/plugin/sample2/Sample2PluginKitTest.java:L54) again: `task1 task2 --configuration-cache`
 
 ```
 Reusing configuration cache.

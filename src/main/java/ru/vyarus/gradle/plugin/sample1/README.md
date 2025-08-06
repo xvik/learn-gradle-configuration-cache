@@ -11,7 +11,7 @@ Gradle configuration cache records state after the configuration phase:
 
 ### Extension 
 
-Simple [extension](src/main/java/ru/vyarus/gradle/plugin/sample1/Sample1Extension.java)
+Simple [extension](Sample1Extension.java)
 with one field, just to show that user-provided value (in build script) is applied
 
 ```java
@@ -31,7 +31,7 @@ Custom getter used to show if extension object was cached.
 
 ### Task
 
-[Task](src/main/java/ru/vyarus/gradle/plugin/sample1/Sample1Extension.java) with 2 properties and 2 fields.
+[Task](Sample1Extension.java) with 2 properties and 2 fields.
 Plugin would configure properties. Private field initialized in constructor (under configuration phase).
 Another field would also be assigned in plugin.
 
@@ -62,7 +62,7 @@ public abstract class Sample1Task extends DefaultTask {
 
 ### Plugin
 
-[Plugin](src/main/java/ru/vyarus/gradle/plugin/sample1/Sample1Plugin.java):
+[Plugin](Sample1Plugin.java):
 
 * Register extension
 * Configure task (on registration and with delayed configuration)
@@ -110,7 +110,7 @@ The only plugin line executed under the configuration cache would be `task.doFir
 
 ## Test
 
-[Test](src/test/java/ru/vyarus/gradle/plugin/sample1/Sample1PluginKitTest.java)
+[Test](/src/test/java/ru/vyarus/gradle/plugin/sample1/Sample1PluginKitTest.java)
 configure plugin extension:
 
 ```groovy
@@ -126,7 +126,7 @@ sample1 {
 
 ### Configuration cache entry creation
 
-[Run](src/test/java/ru/vyarus/gradle/plugin/sample1/Sample1PluginKitTest.java:L35) task with configuration cache enabled:  `sample1Task --configuration-cache`
+[Run](/src/test/java/ru/vyarus/gradle/plugin/sample1/Sample1PluginKitTest.java:L35) task with configuration cache enabled:  `sample1Task --configuration-cache`
 
 ```
 Calculating task graph as no cached configuration is available for tasks: sample1Task
@@ -153,7 +153,7 @@ All plugin code executed.
 
 ### Run from cache
 
-[Run](src/test/java/ru/vyarus/gradle/plugin/sample1/Sample1PluginKitTest.java:L58) again: `sample1Task --configuration-cache`
+[Run](/src/test/java/ru/vyarus/gradle/plugin/sample1/Sample1PluginKitTest.java:L58) again: `sample1Task --configuration-cache`
 
 ```
 Reusing configuration cache.
