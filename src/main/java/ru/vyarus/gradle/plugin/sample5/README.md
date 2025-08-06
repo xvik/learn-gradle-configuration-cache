@@ -1,20 +1,57 @@
 # Task constructor
 
-`Project` object can't be used in task's run method, but it *could* be used in task constructor.
-This way, all required project-related properties could be easily initialized.
+`Project` object [can't be used in task's run](https://docs.gradle.org/current/userguide/configuration_cache_requirements.html#config_cache:requirements:use_project_during_execution) 
+method, but it **could** be used in task constructor. 
+This way, all required project-related properties could be easily initialized (cached).
 
 NOTE: Of course, it is better to initialize a task through properties, but often task requires
 some internal staff, which should not be exposed as a public api.
 
-Task:
+## Task
 
-https://github.com/xvik/learn-gradle-configuration-cache/blob/d72120bba0c73231e509165665e8482d14128218/src/main/java/ru/vyarus/gradle/plugin/sample5/Sample5Task.java#L10-L25
+[Task](Sample5Task.java) requiring project name at runtime:
 
-Plugin:
+```java
+public abstract class Sample5Task extends DefaultTask {
 
-https://github.com/xvik/learn-gradle-configuration-cache/blob/d72120bba0c73231e509165665e8482d14128218/src/main/java/ru/vyarus/gradle/plugin/sample5/Sample5Plugin.java#L12-L18
+    private final String projectName;
 
-Run with cache enabled: `sample5Task --configuration-cache --configuration-cache-problems=warn`
+    public Sample5Task() {
+        // this is configuration time! project access allowed!
+        projectName = getProject().getName();
+        System.out.println("[configuration] Task created");
+    }
+
+    @TaskAction
+    public void run() {
+        // project can't be accessed at runtime
+        System.out.println("Task executed: " + projectName);
+    }
+}
+```
+
+## Plugin
+
+[Plugin](Sample5Plugin.java) just declares the task:
+
+```java
+public abstract class Sample5Plugin implements Plugin<Project> {
+
+    @Override
+    public void apply(Project project) {
+          project.getTasks().register("sample5Task", Sample5Task.class);
+    }
+}
+```
+
+## Test
+
+[Test](/src/test/java/ru/vyarus/gradle/plugin/sample5/Sample5PluginKitTest.java) would show that 
+task constructor runs at configuration time.
+
+### Configuration cache entry creation
+
+[Run](/src/test/java/ru/vyarus/gradle/plugin/sample5/Sample5PluginKitTest.java:L31) with cache enabled: `sample5Task --configuration-cache --configuration-cache-problems=warn`
 
 ```
 Calculating task graph as no cached configuration is available for tasks: sample5Task
@@ -28,7 +65,9 @@ BUILD SUCCESSFUL in 3s
 Configuration cache entry stored.
 ```
 
-Run from cache: `sample5Task --configuration-cache --configuration-cache-problems=warn`
+### Run from cache 
+
+[Run](/src/test/java/ru/vyarus/gradle/plugin/sample5/Sample5PluginKitTest.java:L42) from cache: `sample5Task --configuration-cache --configuration-cache-problems=warn`
 
 ```
 Reusing configuration cache.
@@ -40,3 +79,5 @@ BUILD SUCCESSFUL in 81ms
 1 actionable task: 1 executed
 Configuration cache entry reused.
 ```
+
+Project name was serialized inside task property and used under configuration cache.
