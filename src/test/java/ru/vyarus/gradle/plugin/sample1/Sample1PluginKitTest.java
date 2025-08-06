@@ -49,6 +49,7 @@ public class Sample1PluginKitTest extends AbstractKitTest {
                 [configuration] Task delayed configuration. Ext message: Configured!
                 
                 > Task :sample1Task
+                Extension get message: Configured!
                 Before task: Configured!
                 Task executed: param1=Configured!, param2=Custom, public field=assigned value, private field=set
                 """);
@@ -63,6 +64,7 @@ public class Sample1PluginKitTest extends AbstractKitTest {
                 "Reusing configuration cache.");
         Assertions.assertThat(out).contains("""
                 > Task :sample1Task
+                Extension get message: Configured!
                 Before task: Configured!
                 Task executed: param1=Configured!, param2=Custom, public field=assigned value, private field=set
                 """);

@@ -26,7 +26,7 @@ public abstract class Sample1Plugin implements Plugin<Project> {
             System.out.println("[configuration] Task configured. Ext message: " + ext.message);
 
             // the only line that works also under the configuration cache
-            task.doFirst(task1 -> System.out.println("Before task: " + ext.message));
+            task.doFirst(task1 -> System.out.println("Before task: " + ext.getMessage()));
         });
         // task registered but not yet configured (user configuration also not yet applied)
         System.out.println("[configuration] Task registered. Ext message: " + ext.message);
