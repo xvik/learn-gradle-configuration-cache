@@ -35,6 +35,9 @@ used at different places would be deserialized into different instances
 4. [Method calls, providers](src/main/java/ru/vyarus/gradle/plugin/sample4/) shows provider behavior at execution time 
 5. [Task constructor](src/main/java/ru/vyarus/gradle/plugin/sample5/) shows that task constructor could be used to reference all required 
 project-related properties under configuration time 
+6. [Build service runtime access](src/main/java/ru/vyarus/gradle/plugin/sample6/) shows that build service
+can't remember it's state (changed during configuration), but gradle could cache resolved
+values (so actual state is not so important)
 
 For each sample a test output is present in readme. But you can run tests yourself 
 (with modifications or other gradle versions).
@@ -88,7 +91,7 @@ Task executed: junit12045893691932608949
 
 ```
 
-During the real plugin project migration, the target is to aliminate all such errors.
+During the real plugin project migration, the target is to eliminate all such errors.
 
 Note that different errors might appear in different cases: all plugin execution "branches" must be checked for 
 configuration cache compatibility (gradle will not print all warnings at once - only for actually executed code). 

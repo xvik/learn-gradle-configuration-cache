@@ -55,6 +55,10 @@ gradlePlugin {
             id = "ru.vyarus.sample5"
             implementationClass = "ru.vyarus.gradle.plugin.sample5.Sample5Plugin"
         }
+        create("sample6") {
+            id = "ru.vyarus.sample6"
+            implementationClass = "ru.vyarus.gradle.plugin.sample6.Sample6Plugin"
+        }
     }
 }
 
