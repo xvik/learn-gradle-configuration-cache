@@ -36,8 +36,10 @@ used at different places would be deserialized into different instances
 5. [Task constructor](src/main/java/ru/vyarus/gradle/plugin/sample5/) shows that task constructor could be used to reference all required 
 project-related properties under configuration time 
 6. [Build service runtime access](src/main/java/ru/vyarus/gradle/plugin/sample6/) shows that build service
-can't remember it's state (changed during configuration), but gradle could cache resolved
-values (so actual state is not so important)
+can't remember its state (changed during configuration), but gradle could cache service access
+points, so there is (probably) no need to maintain the correct state.
+7. [Build service parameter](src/main/java/ru/vyarus/gradle/plugin/sample7/) state, collected under configuration phase
+could be stored in the build service parameter (but with a caveat)
 
 For each sample a test output is present in readme. But you can run tests yourself 
 (with modifications or other gradle versions).

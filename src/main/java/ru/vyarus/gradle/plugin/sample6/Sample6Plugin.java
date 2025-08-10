@@ -9,8 +9,8 @@ import javax.inject.Inject;
 import java.util.List;
 
 /**
- * Plugin shows different cache behaviour for variables and direct service access. Also shows that service
- * does not preserve state and can call other service.
+ * Plugin shows different cache behavior for variables and direct service access. Also, it shows that service
+ * does not preserve the state and service can call other services.
  *
  * @author Vyacheslav Rusakov
  * @since 08.08.2025
@@ -22,12 +22,9 @@ public abstract class Sample6Plugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
-        // service 1 with "state" in parameter and in private field
-        Provider<Service1> service1 = project.getGradle().getSharedServices().registerIfAbsent(
-                "service1", Service1.class, spec -> {
-                    // initial "persisted storage" value
-                    spec.getParameters().getListHolder().set(new Service1.ListHolder());
-                });
+        // service 1 with "state" in a private field
+        Provider<Service1> service1 = project.getGradle().getSharedServices()
+                .registerIfAbsent("service1", Service1.class);
         // service 1 must not be closed; otherwise the stored (in it) configuration state would be lost
         getEventsListenerRegistry().onTaskCompletion(service1);
 
@@ -43,14 +40,11 @@ public abstract class Sample6Plugin implements Plugin<Project> {
         project.getTasks().register("sample6Task", task -> {
             service1.get().addState("val2");
             // different state access at runtime: directly from service or with variable
-            final Service1.ListHolder parameter = service1.get().getParameters().getListHolder().get();
             final List<String> state = service1.get().getState();
             Provider<List<String>> cachedState = project.provider(() -> service1.get().getState());
             // runtime: call service 2, which calls service 1 and prints state
             task.doLast(task1 -> {
                 service2.get().doAction();
-                System.out.println("Parameter: " + service1.get().getParameters().getListHolder().get());
-                System.out.println("Parameter var: " + parameter);
                 System.out.println("Direct state: " + service1.get().getState());
                 System.out.println("Direct state var: " + state);
                 System.out.println("Provider: " + cachedState.get());

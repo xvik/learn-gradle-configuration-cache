@@ -36,9 +36,18 @@ public class Sample6PluginKitTest extends AbstractKitTest {
                 "Calculating task graph as no cached configuration is available for tasks:",
                 "Configuration cache entry stored.");
         Assertions.assertThat(out).contains(
-                "Added value 'val1': state=[val1],",
-                "Added value 'val2': state=[val1, val2],",
-                "Service 2 called Service 1 with state: state=[val1, val2],");
+                "Added value 'val1': state=[val1]",
+                "Added value 'val2': state=[val1, val2]",
+                "Service 2 called Service 1 with state: state=[val1, val2]");
+        Assertions.assertThat(out).contains("""
+                Service 2 created
+                Service 2 called Service 1 with state: state=[val1, val2]
+                Direct state: [val1, val2]
+                Direct state var: [val1, val2]
+                Provider: [val1, val2]
+                Service 1 closed
+                Service 2 closed
+                """);
 
         // WHEN run with populated cache
         System.out.println("\n\n------------------- FROM CACHE ----------------------------------------");
@@ -48,11 +57,15 @@ public class Sample6PluginKitTest extends AbstractKitTest {
         // THEN cache used
         Assertions.assertThat(out).contains(
                 "Reusing configuration cache.");
-        Assertions.assertThat(out).contains(
-                "Service 1 created: state=[]",
-                "Service 2 called Service 1 with state: state=[]",
-                "Direct state: []",
-                "Direct state var: [val1, val2]",
-                "Provider: [val1, val2]");
+        Assertions.assertThat(out).contains("""
+                Service 2 created
+                Service 1 created: state=[]
+                Service 2 called Service 1 with state: state=[]
+                Direct state: []
+                Direct state var: [val1, val2]
+                Provider: [val1, val2]
+                Service 1 closed
+                Service 2 closed
+                """);
     }
 }
