@@ -40,6 +40,9 @@ can't remember its state (changed during configuration), but gradle could cache 
 points, so there is (probably) no need to maintain the correct state.
 7. [Build service parameter](src/main/java/ru/vyarus/gradle/plugin/sample7/) state, collected under configuration phase
 could be stored in the build service parameter (but with a caveat)
+8. [Build cache](src/main/java/ru/vyarus/gradle/plugin/sample8/) might be used together with the configuration cache,
+but this might lead to not executed `doFirst`/`doLast` blocks (on which you could rely on). Service could workaround this
+limitation.
 
 For each sample a test output is present in readme. But you can run tests yourself 
 (with modifications or other gradle versions).
