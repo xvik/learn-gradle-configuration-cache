@@ -12,7 +12,7 @@ Useful links:
 * [Build services](https://docs.gradle.org/current/userguide/build_services.html)
 * [Gradle services](https://docs.gradle.org/current/userguide/service_injection.html#service_injection)
 
-## TLDR;
+## TL;DR
 
 * You can do whatever you want at *configuration* time. You are limited at *execution* time
     - `Provider` and `ValueSource` are common workarounds for execution time
