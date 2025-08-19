@@ -43,6 +43,8 @@ could be stored in the build service parameter (but with a caveat)
 8. [Build cache](src/main/java/ru/vyarus/gradle/plugin/sample8/) might be used together with the configuration cache,
 but this might lead to not executed `doFirst`/`doLast` blocks (on which you could rely on). Service could workaround this
 limitation.
+9. [Multi module projects](src/main/java/ru/vyarus/gradle/plugin/sample9/) pays attention to multi-module
+projects side effects (which must be also counted)
 
 For each sample a test output is present in readme. But you can run tests yourself 
 (with modifications or other gradle versions).
@@ -99,4 +101,25 @@ Task executed: junit12045893691932608949
 During the real plugin project migration, the target is to eliminate all such errors.
 
 Note that different errors might appear in different cases: all plugin execution "branches" must be checked for 
-configuration cache compatibility (gradle will not print all warnings at once - only for actually executed code). 
+configuration cache compatibility (gradle will not print all warnings at once - only for actually executed code).
+
+### TestKit jococo problem
+
+When running TestKit-based tests with enabled jococo plugin (for coverage), you'll have [an issue](https://docs.gradle.org/8.14.3/userguide/configuration_cache.html#config_cache:not_yet_implemented:testkit_build_with_java_agent):
+
+```
+1 problem was found storing the configuration cache.
+- Gradle runtime: support for using a Java agent with TestKit builds is not yet implemented with the configuration cache.
+  See https://docs.gradle.org/8.14.3/userguide/configuration_cache.html#config_cache:not_yet_implemented:testkit_build_with_java_agent
+```
+
+But, it's not a critical problem: test must check that it was THE ONLY problem:
+
+```java
+BuildResult result = run('someTask', '--configuration-cache', '--configuration-cache-problems=warn');
+Assertions.assertThat(result.getOutput()).contains(
+                "1 problem was found storing the configuration cache",
+                "Gradle runtime: support for using a Java agent with TestKit",
+                "Calculating task graph as no cached configuration is available for tasks:"
+);
+```
