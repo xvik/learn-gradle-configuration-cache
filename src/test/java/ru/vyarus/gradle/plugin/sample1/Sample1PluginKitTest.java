@@ -41,6 +41,7 @@ public class Sample1PluginKitTest extends AbstractKitTest {
                 "Configuration cache entry stored.");
         Assertions.assertThat(out).contains("""
                 > Configure project :
+                [configuration] Plugin created
                 [configuration] Plugin applied
                 [configuration] Extension created
                 [configuration] Task registered. Ext message: Default
@@ -51,7 +52,7 @@ public class Sample1PluginKitTest extends AbstractKitTest {
 
                 > Task :sample1Task
                 Extension get message: Configured!
-                [run] Before task: Configured!
+                [run] Before task: Configured!, plugin field: assigned value
                 [run] Task executed: message=Configured!, message2=Custom, public field=assigned value, private field=set
                 """);
 
@@ -66,7 +67,7 @@ public class Sample1PluginKitTest extends AbstractKitTest {
         Assertions.assertThat(out).contains("""
                 > Task :sample1Task
                 Extension get message: Configured!
-                [run] Before task: Configured!
+                [run] Before task: Configured!, plugin field: assigned value
                 [run] Task executed: message=Configured!, message2=Custom, public field=assigned value, private field=set
                 """);
 
@@ -96,6 +97,7 @@ public class Sample1PluginKitTest extends AbstractKitTest {
                 "Configuration cache entry stored.");
         Assertions.assertThat(out).contains("""
                 > Configure project :
+                [configuration] Plugin created
                 [configuration] Plugin applied
                 [configuration] Extension created
                 [configuration] Task registered. Ext message: Default
@@ -106,7 +108,7 @@ public class Sample1PluginKitTest extends AbstractKitTest {
 
                 > Task :sample1Task
                 Extension get message: Changed!
-                [run] Before task: Changed!
+                [run] Before task: Changed!, plugin field: assigned value
                 [run] Task executed: message=Changed!, message2=Custom, public field=assigned value, private field=set
                 """);
 

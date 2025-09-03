@@ -75,6 +75,12 @@ public abstract class Sample1Task extends DefaultTask {
 ```java
 public abstract class Sample1Plugin implements Plugin<Project> {
 
+    private String pluginField;
+
+    public Sample1Plugin() {
+        System.out.println("[configuration] Plugin created");
+    }
+
     @Override
     public void apply(Project project) {
         System.out.println("[configuration] Plugin applied");
@@ -83,20 +89,23 @@ public abstract class Sample1Plugin implements Plugin<Project> {
 
         // register custom task
         project.getTasks().register("sample1Task", Sample1Task.class, task -> {
-            // task configured from extension, by default (note provider usage for lazy initialization)
-            task.getMessage().convention(project.provider(() -> ext.message));
+            task.getMessage().convention(ext.message);
             task.getMessage2().convention("Default");
-            task.value = "assigned value";
+            task.field = "assigned value";
             System.out.println("[configuration] Task configured. Ext message: " + ext.message);
 
             // the only line that works also under the configuration cache
-            task.doFirst(task1 -> System.out.println("Before task: " + ext.getMessage()));
+            task.doFirst(task1 -> System.out.println("[run] Before task: " + ext.getMessage()
+                    + ", plugin field: " + pluginField));
         });
         // task registered but not yet configured (user configuration also not yet applied)
         System.out.println("[configuration] Task registered. Ext message: " + ext.message);
 
         // afterEvaluate often used by plugins as the first point where user configuration applied
-        project.afterEvaluate(p -> System.out.println("[configuration] Project evaluated. Ext message: " + ext.message));
+        project.afterEvaluate(p -> {
+            pluginField = "assigned value";
+            System.out.println("[configuration] Project evaluated. Ext message: " + ext.message);
+        });
 
         // custom (lazy) task configuration
         project.getTasks().withType(Sample1Task.class).configureEach(task -> {
@@ -136,6 +145,7 @@ sample1 {
 Calculating task graph as no cached configuration is available for tasks: sample1Task
 
 > Configure project :
+[configuration] Plugin created
 [configuration] Plugin applied
 [configuration] Extension created
 [configuration] Task registered. Ext message: Default
@@ -146,8 +156,8 @@ Calculating task graph as no cached configuration is available for tasks: sample
 
 > Task :sample1Task
 Extension get message: Configured!
-Before task: Configured!
-Task executed: param1=Configured!, param2=Custom, public field=assigned value, private field=set
+[run] Before task: Configured!, plugin field: assigned value
+[run] Task executed: param1=Configured!, param2=Custom, public field=assigned value, private field=set
 
 BUILD SUCCESSFUL in 2s
 1 actionable task: 1 executed
@@ -165,8 +175,8 @@ Reusing configuration cache.
 
 > Task :sample1Task
 Extension get message: Configured!
-Before task: Configured!
-Task executed: param1=Configured!, param2=Custom, public field=assigned value, private field=set
+[run] Before task: Configured!, plugin field: assigned value
+[run] Task executed: param1=Configured!, param2=Custom, public field=assigned value, private field=set
 
 BUILD SUCCESSFUL in 56ms
 1 actionable task: 1 executed
@@ -211,6 +221,7 @@ The cache would be invalidated:
 Calculating task graph as configuration cache cannot be reused because file 'build.gradle' has changed.
 
 > Configure project :
+[configuration] Plugin created
 [configuration] Plugin applied
 [configuration] Extension created
 [configuration] Task registered. Ext message: Default
@@ -221,8 +232,8 @@ Calculating task graph as configuration cache cannot be reused because file 'bui
 
 > Task :sample1Task
 Extension get message: Changed!
-Before task: Changed!
-Task executed: param1=Changed!, param2=Custom, public field=assigned value, private field=set
+[run] Before task: Changed!, plugin field: assigned value
+[run] Task executed: param1=Changed!, param2=Custom, public field=assigned value, private field=set
 
 BUILD SUCCESSFUL in 116ms
 1 actionable task: 1 executed

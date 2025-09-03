@@ -11,6 +11,12 @@ import org.gradle.api.Project;
  */
 public abstract class Sample1Plugin implements Plugin<Project> {
 
+    private String pluginField;
+
+    public Sample1Plugin() {
+        System.out.println("[configuration] Plugin created");
+    }
+
     @Override
     public void apply(Project project) {
         System.out.println("[configuration] Plugin applied");
@@ -25,13 +31,17 @@ public abstract class Sample1Plugin implements Plugin<Project> {
             System.out.println("[configuration] Task configured. Ext message: " + ext.message);
 
             // the only line that works also under the configuration cache
-            task.doFirst(task1 -> System.out.println("[run] Before task: " + ext.getMessage()));
+            task.doFirst(task1 -> System.out.println("[run] Before task: " + ext.getMessage()
+                    + ", plugin field: " + pluginField));
         });
         // task registered but not yet configured (user configuration also not yet applied)
         System.out.println("[configuration] Task registered. Ext message: " + ext.message);
 
         // afterEvaluate often used by plugins as the first point where user configuration applied
-        project.afterEvaluate(p -> System.out.println("[configuration] Project evaluated. Ext message: " + ext.message));
+        project.afterEvaluate(p -> {
+            pluginField = "assigned value";
+            System.out.println("[configuration] Project evaluated. Ext message: " + ext.message);
+        });
 
         // custom (lazy) task configuration
         project.getTasks().withType(Sample1Task.class).configureEach(task -> {
