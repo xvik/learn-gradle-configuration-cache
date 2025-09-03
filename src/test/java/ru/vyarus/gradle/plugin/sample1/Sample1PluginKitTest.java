@@ -42,12 +42,13 @@ public class Sample1PluginKitTest extends AbstractKitTest {
         Assertions.assertThat(out).contains("""
                 > Configure project :
                 [configuration] Plugin applied
+                [configuration] Extension created
                 [configuration] Task registered. Ext message: Default
                 [configuration] Project evaluated. Ext message: Configured!
                 [configuration] Task created
                 [configuration] Task configured. Ext message: Configured!
                 [configuration] Task delayed configuration. Ext message: Configured!
-                
+
                 > Task :sample1Task
                 Extension get message: Configured!
                 Before task: Configured!
@@ -68,5 +69,46 @@ public class Sample1PluginKitTest extends AbstractKitTest {
                 Before task: Configured!
                 Task executed: param1=Configured!, param2=Custom, public field=assigned value, private field=set
                 """);
+
+        // WHEN configuration changed
+        System.out.println("\n\n------------------- INVALIDATE CACHE ----------------------------------------");
+        build("""
+                plugins {
+                    id 'java'
+                    id 'ru.vyarus.sample1'
+                }
+                
+                sample1 {
+                    message = "Changed!"
+                }
+                
+                repositories {
+                    // required for testKit run
+                    mavenCentral()
+                }
+                """);
+        result = run("sample1Task", "--configuration-cache", "--configuration-cache-problems=warn");
+
+        // THEN cache not used
+        out = result.getOutput();
+        Assertions.assertThat(out).contains(
+                "Calculating task graph as configuration cache cannot be reused because file 'build.gradle' has changed.",
+                "Configuration cache entry stored.");
+        Assertions.assertThat(out).contains("""
+                > Configure project :
+                [configuration] Plugin applied
+                [configuration] Extension created
+                [configuration] Task registered. Ext message: Default
+                [configuration] Project evaluated. Ext message: Changed!
+                [configuration] Task created
+                [configuration] Task configured. Ext message: Changed!
+                [configuration] Task delayed configuration. Ext message: Changed!
+
+                > Task :sample1Task
+                Extension get message: Changed!
+                Before task: Changed!
+                Task executed: param1=Changed!, param2=Custom, public field=assigned value, private field=set
+                """);
+
     }
 }

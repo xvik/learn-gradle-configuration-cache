@@ -19,6 +19,10 @@ public class Sample1Extension {
 
     public String message = "Default";
 
+    public Sample1Extension() {
+        System.out.println("[configuration] Extension created");
+    }
+
     // used to show if message getter used under cache
     public String getMessage() {
         System.out.println("Extension get message: " + message);
@@ -133,6 +137,7 @@ Calculating task graph as no cached configuration is available for tasks: sample
 
 > Configure project :
 [configuration] Plugin applied
+[configuration] Extension created
 [configuration] Task registered. Ext message: Default
 [configuration] Project evaluated. Ext message: Configured!
 [configuration] Task created
@@ -189,3 +194,39 @@ Such serialization could be easily avoided by:
 1. Assigning extension value into a local variable outside of runtime block (so gradle wouldn't need 
 to cache the entire object anymore)
 2. Using providers (would be shown in the next samples)
+
+### Change configuration
+
+Now, if we change user configuration:
+
+```groovy
+sample1 {
+    message = "Changed!"
+}
+```
+
+The cache would be invalidated:
+
+```
+Calculating task graph as configuration cache cannot be reused because file 'build.gradle' has changed.
+
+> Configure project :
+[configuration] Plugin applied
+[configuration] Extension created
+[configuration] Task registered. Ext message: Default
+[configuration] Project evaluated. Ext message: Changed!
+[configuration] Task created
+[configuration] Task configured. Ext message: Changed!
+[configuration] Task delayed configuration. Ext message: Changed!
+
+> Task :sample1Task
+Extension get message: Changed!
+Before task: Changed!
+Task executed: param1=Changed!, param2=Custom, public field=assigned value, private field=set
+
+BUILD SUCCESSFUL in 116ms
+1 actionable task: 1 executed
+Configuration cache entry stored.
+```
+
+And new cache record stored.
