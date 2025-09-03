@@ -111,10 +111,10 @@ First, let's [run](/src/test/java/ru/vyarus/gradle/plugin/sample2/Sample2PluginK
 [configuration] Initial shared object: 672905948@[], direct=Custom, configTime=null
 
 > Task :task1
-Task 1 shared object: 672905948@[Task 1], direct=Custom, configTime=Configured!
+[run] Task 1 shared object: 672905948@[Task 1], direct=Custom, configTime=Configured!
 
 > Task :task2
-Task 2 shared object: 672905948@[Task 1, Task 2], direct=Custom, configTime=Configured!
+[run] Task 2 shared object: 672905948@[Task 1, Task 2], direct=Custom, configTime=Configured!
 
 BUILD SUCCESSFUL in 3s
 2 actionable tasks: 2 executed
@@ -135,10 +135,10 @@ Calculating task graph as no cached configuration is available for tasks: task1 
 [configuration] Initial shared object: 933202558@[], direct=Custom, configTime=null
 
 > Task :task2
-Task 2 shared object: 1657468480@[Task 2], direct=Custom, configTime=Configured!
+[run] Task 2 shared object: 1657468480@[Task 2], direct=Custom, configTime=Configured!
 
 > Task :task1
-Task 1 shared object: 1796357920@[Task 1], direct=Custom, configTime=Configured!
+[run] Task 1 shared object: 1796357920@[Task 1], direct=Custom, configTime=Configured!
 
 BUILD SUCCESSFUL in 411ms
 2 actionable tasks: 2 executed
@@ -160,10 +160,10 @@ You can see:
 Reusing configuration cache.
 
 > Task :task2
-Task 2 shared object: 1707968050@[Task 2], direct=Custom, configTime=Configured!
+[run] Task 2 shared object: 1707968050@[Task 2], direct=Custom, configTime=Configured!
 
 > Task :task1
-Task 1 shared object: 211975597@[Task 1], direct=Custom, configTime=Configured!
+[run] Task 1 shared object: 211975597@[Task 1], direct=Custom, configTime=Configured!
 
 BUILD SUCCESSFUL in 53ms
 2 actionable tasks: 2 executed

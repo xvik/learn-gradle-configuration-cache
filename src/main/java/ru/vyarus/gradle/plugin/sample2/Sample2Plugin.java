@@ -27,13 +27,13 @@ public abstract class Sample2Plugin implements Plugin<Project> {
         project.getTasks().register("task1").configure(task ->
                 task.doLast(task1 -> {
                     state.list.add("Task 1");
-                    System.out.println("Task 1 shared object: " + state);
+                    System.out.println("[run] Task 1 shared object: " + state);
                 }));
 
         project.getTasks().register("task2").configure(task ->
                 task.doLast(task1 -> {
                     state.list.add("Task 2");
-                    System.out.println("Task 2 shared object: " + state);
+                    System.out.println("[run] Task 2 shared object: " + state);
                 }));
     }
 }
