@@ -17,19 +17,19 @@ public abstract class Sample1Task extends DefaultTask {
     @Input
     abstract Property<String> getMessage2();
 
-    public String value;
-    private String privateValue;
+    public String field;
+    private String privateField;
 
     public Sample1Task() {
         System.out.println("[configuration] Task created");
-        privateValue = "set";
+        privateField = "set";
     }
 
     @TaskAction
     public void run() {
-        System.out.println("Task executed: param1=" + getMessage().get()
-                + ", param2=" + getMessage2().get()
-                + ", public field=" + value
-                + ", private field=" + privateValue);
+        System.out.println("[run] Task executed: message=" + getMessage().get()
+                + ", message2=" + getMessage2().get()
+                + ", public field=" + field
+                + ", private field=" + privateField);
     }
 }

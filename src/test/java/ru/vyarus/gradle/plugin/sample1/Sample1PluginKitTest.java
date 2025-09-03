@@ -51,8 +51,8 @@ public class Sample1PluginKitTest extends AbstractKitTest {
 
                 > Task :sample1Task
                 Extension get message: Configured!
-                Before task: Configured!
-                Task executed: param1=Configured!, param2=Custom, public field=assigned value, private field=set
+                [run] Before task: Configured!
+                [run] Task executed: message=Configured!, message2=Custom, public field=assigned value, private field=set
                 """);
 
         // WHEN run with populated cache
@@ -66,8 +66,8 @@ public class Sample1PluginKitTest extends AbstractKitTest {
         Assertions.assertThat(out).contains("""
                 > Task :sample1Task
                 Extension get message: Configured!
-                Before task: Configured!
-                Task executed: param1=Configured!, param2=Custom, public field=assigned value, private field=set
+                [run] Before task: Configured!
+                [run] Task executed: message=Configured!, message2=Custom, public field=assigned value, private field=set
                 """);
 
         // WHEN configuration changed
@@ -106,8 +106,8 @@ public class Sample1PluginKitTest extends AbstractKitTest {
 
                 > Task :sample1Task
                 Extension get message: Changed!
-                Before task: Changed!
-                Task executed: param1=Changed!, param2=Custom, public field=assigned value, private field=set
+                [run] Before task: Changed!
+                [run] Task executed: message=Changed!, message2=Custom, public field=assigned value, private field=set
                 """);
 
     }

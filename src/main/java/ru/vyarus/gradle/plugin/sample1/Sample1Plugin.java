@@ -19,14 +19,13 @@ public abstract class Sample1Plugin implements Plugin<Project> {
 
         // register custom task
         project.getTasks().register("sample1Task", Sample1Task.class, task -> {
-            // task configured from extension, by default (note provider usage for lazy initialization)
-            task.getMessage().convention(project.provider(() -> ext.message));
+            task.getMessage().convention(ext.message);
             task.getMessage2().convention("Default");
-            task.value = "assigned value";
+            task.field = "assigned value";
             System.out.println("[configuration] Task configured. Ext message: " + ext.message);
 
             // the only line that works also under the configuration cache
-            task.doFirst(task1 -> System.out.println("Before task: " + ext.getMessage()));
+            task.doFirst(task1 -> System.out.println("[run] Before task: " + ext.getMessage()));
         });
         // task registered but not yet configured (user configuration also not yet applied)
         System.out.println("[configuration] Task registered. Ext message: " + ext.message);
