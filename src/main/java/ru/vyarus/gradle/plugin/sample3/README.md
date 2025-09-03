@@ -45,7 +45,7 @@ public abstract class SharedService implements BuildService<SharedService.Params
     public String toString() {
         return System.identityHashCode(this) + "@" + list.toString()
                 + ", param: " + getParameters().getExtParam().getOrNull()
-                + ", direct param: " + extParam;
+                + ", field: " + extParam;
     }
 
     // IMPORTANT: gradle could close service at any time and start a new instance!
@@ -96,7 +96,7 @@ public abstract class Sample3Plugin implements Plugin<Project> {
                 task.doLast(task1 -> {
                     final SharedService sharedService = service.get();
                     sharedService.list.add("Task 1");
-                    System.out.println("Task 1 shared object: " + sharedService);
+                    System.out.println("[run] Task 1 shared object: " + sharedService);
                 }));
 
         project.getTasks().register("task2").configure(task -> {
@@ -107,7 +107,7 @@ public abstract class Sample3Plugin implements Plugin<Project> {
             task.doLast(task1 -> {
                 final SharedService sharedService = service.get();
                 sharedService.list.add("Task 2");
-                System.out.println("Task 2 shared object: " + sharedService);
+                System.out.println("[run] Task 2 shared object: " + sharedService);
             });
         });
     }
@@ -143,10 +143,10 @@ Shared service created 2051638568@
 [configuration] Project evaluated. Direct assigning: Configured! to service 2051638568@[], param: Configured!, direct param: Configured!)
 
 > Task :task1
-Task 1 shared object: 2051638568@[Task 1], param: Configured!, direct param: Configured!
+[run] Task 1 shared object: 2051638568@[Task 1], param: Configured!, field: Configured!
 
 > Task :task2
-Task 2 shared object: 2051638568@[Task 1, Task 2], param: Configured!, direct param: Configured!
+[run] Task 2 shared object: 2051638568@[Task 1, Task 2], param: Configured!, field: Configured!
 Shared service closed: 2051638568
 
 BUILD SUCCESSFUL in 3s
@@ -171,10 +171,10 @@ Shared service closed: 1676456863
 
 > Task :task1
 Shared service created 206909926@
-Task 1 shared object: 206909926@[Task 1], param: Configured!, direct param: null
+[run] Task 1 shared object: 206909926@[Task 1], param: Configured!, field: null
 
 > Task :task2
-Task 2 shared object: 206909926@[Task 1, Task 2], param: Configured!, direct param: null
+[run] Task 2 shared object: 206909926@[Task 1, Task 2], param: Configured!, field: null
 Shared service closed: 206909926
 
 BUILD SUCCESSFUL in 388ms
@@ -201,10 +201,10 @@ Reusing configuration cache.
 
 > Task :task1
 Shared service created 1754437046@
-Task 1 shared object: 1754437046@[Task 1], param: Configured!, direct param: null
+[run] Task 1 shared object: 1754437046@[Task 1], param: Configured!, field: null
 
 > Task :task2
-Task 2 shared object: 1754437046@[Task 1, Task 2], param: Configured!, direct param: null
+[run] Task 2 shared object: 1754437046@[Task 1, Task 2], param: Configured!, field: null
 Shared service closed: 1754437046
 ```
 
@@ -270,15 +270,15 @@ Running the same test with the updated plugin and service.
 ```
 > Configure project :
 Shared service created 392451429@
-[configuration] Project evaluated. Direct assigning: Configured! to service 392451429@[], param: Configured!, direct param: Configured!)
+[configuration] Project evaluated. Direct assigning: Configured! to service 392451429@[], param: Configured!, field: Configured!)
 
 > Task :task1
-Task 1 shared object: 392451429@[Task 1], param: Configured!, direct param: Configured!
+[run] Task 1 shared object: 392451429@[Task 1], param: Configured!, field: Configured!
 
 > Task :task2
-Task 2 shared object: 392451429@[Task 1, Task 2], param: Configured!, direct param: Configured!
-Finish event: :task1 caught on service 392451429@[Task 1, Task 2], param: Configured!, direct param: Configured!
-Finish event: :task2 caught on service 392451429@[Task 1, Task 2], param: Configured!, direct param: Configured!
+[run] Task 2 shared object: 392451429@[Task 1, Task 2], param: Configured!, field: Configured!
+Finish event: :task1 caught on service 392451429@[Task 1, Task 2], param: Configured!, field: Configured!
+Finish event: :task2 caught on service 392451429@[Task 1, Task 2], param: Configured!, field: Configured!
 Shared service closed: 392451429
 
 BUILD SUCCESSFUL in 2s
@@ -297,15 +297,15 @@ Calculating task graph as no cached configuration is available for tasks: task1 
 
 > Configure project :
 Shared service created 16533414@
-[configuration] Project evaluated. Direct assigning: Configured! to service 16533414@[], param: Configured!, direct param: Configured!)
+[configuration] Project evaluated. Direct assigning: Configured! to service 16533414@[], param: Configured!, field: Configured!)
 
 > Task :task1
-Task 1 shared object: 16533414@[Task 1], param: Configured!, direct param: Configured!
+[run] Task 1 shared object: 16533414@[Task 1], param: Configured!, field: Configured!
 Finish event: :task1 caught on service 16533414@[Task 1], param: Configured!, direct param: Configured!
 
 > Task :task2
-Task 2 shared object: 16533414@[Task 1, Task 2], param: Configured!, direct param: Configured!
-Finish event: :task2 caught on service 16533414@[Task 1, Task 2], param: Configured!, direct param: Configured!
+[run] Task 2 shared object: 16533414@[Task 1, Task 2], param: Configured!, direct param: Configured!
+Finish event: :task2 caught on service 16533414@[Task 1, Task 2], param: Configured!, field: Configured!
 Shared service closed: 16533414
 
 BUILD SUCCESSFUL in 397ms
@@ -324,11 +324,11 @@ Reusing configuration cache.
 
 > Task :task1
 Shared service created 1490472003@
-Task 1 shared object: 1490472003@[Task 1], param: Configured!, direct param: null
+[run] Task 1 shared object: 1490472003@[Task 1], param: Configured!, field: null
 Finish event: :task1 caught on service 1490472003@[Task 1], param: Configured!, direct param: null
 
 > Task :task2
-Task 2 shared object: 1490472003@[Task 1, Task 2], param: Configured!, direct param: null
+[run] Task 2 shared object: 1490472003@[Task 1, Task 2], param: Configured!, field: null
 Finish event: :task2 caught on service 1490472003@[Task 1, Task 2], param: Configured!, direct param: null
 Shared service closed: 1490472003
 

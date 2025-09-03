@@ -43,7 +43,7 @@ public abstract class Sample3SingletonPlugin implements Plugin<Project> {
                 task.doLast(task1 -> {
                     final SharedServiceSingleton sharedService = service.get();
                     sharedService.list.add("Task 1");
-                    System.out.println("Task 1 shared object: " + sharedService);
+                    System.out.println("[run] Task 1 shared object: " + sharedService);
                 }));
 
         project.getTasks().register("task2").configure(task -> {
@@ -54,7 +54,7 @@ public abstract class Sample3SingletonPlugin implements Plugin<Project> {
             task.doLast(task1 -> {
                 final SharedServiceSingleton sharedService = service.get();
                 sharedService.list.add("Task 2");
-                System.out.println("Task 2 shared object: " + sharedService);
+                System.out.println("[run] Task 2 shared object: " + sharedService);
             });
         });
     }

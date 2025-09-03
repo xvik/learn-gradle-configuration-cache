@@ -37,7 +37,7 @@ public abstract class SharedServiceSingleton implements BuildService<SharedServi
     public String toString() {
         return System.identityHashCode(this) + "@" + list.toString()
                 + ", param: " + getParameters().getExtParam().getOrNull()
-                + ", direct param: " + extParam;
+                + ", field: " + extParam;
     }
 
     // IMPORTANT: gradle could close service at any time and start a new instance!
