@@ -22,7 +22,7 @@ public class Sample4Plugin implements Plugin<Project> {
         project.getTasks().register("task1").configure(task -> {
             Provider<String> provider = project.provider(() -> {
                 String res = String.valueOf(project.findProperty("startTime"));
-                System.out.println("[configuration] Provider called: " + res);
+                System.out.println("Provider called: " + res);
                 return res;
             });
             task.doLast(task1 -> {
@@ -47,13 +47,30 @@ public class Sample4Plugin implements Plugin<Project> {
 use the command line to specify a custom property value to see if cache will invalidate
 when the property value changes.
 
+### Run without cache
+
+[Run](/src/test/java/ru/vyarus/gradle/plugin/sample4/Sample4PluginKitTest.java:L31) without cache: `task1 -PstartTime=1`
+
+```
+> Task :task1
+called computeMessage('static')
+Task exec / static value: Computed message: static
+Provider called: 1
+called computeMessage('provider 1')
+Task exec / provider value: Computed message: provider 1
+
+BUILD SUCCESSFUL in 2s
+```
+
+Note that provider is called under runtime.
+
 ### Configuration cache entry creation
 
 [Run](/src/test/java/ru/vyarus/gradle/plugin/sample4/Sample4PluginKitTest.java:L31) with cache enabled: `task1 -PstartTime=1 --configuration-cache --configuration-cache-problems=warn`
 
 ```
 Calculating task graph as no cached configuration is available for tasks: task1
-[configuration] Provider called: 1
+Provider called: 1
 
 > Task :task1
 called computeMessage('static')
@@ -61,12 +78,12 @@ Task exec / static value: Computed message: static
 called computeMessage('provider 1')
 Task exec / provider value: Computed message: provider 1
 
-BUILD SUCCESSFUL in 3s
+BUILD SUCCESSFUL in 408ms
 1 actionable task: 1 executed
 Configuration cache entry stored.
 ```
 
-Provider was called to calculate value.
+Provider was called to calculate value under **configuration phase**!
 
 ### Run from cache
 
@@ -81,7 +98,7 @@ Task exec / static value: Computed message: static
 called computeMessage('provider 1')
 Task exec / provider value: Computed message: provider 1
 
-BUILD SUCCESSFUL in 82ms
+BUILD SUCCESSFUL in 55ms
 1 actionable task: 1 executed
 Configuration cache entry reused.
 ```

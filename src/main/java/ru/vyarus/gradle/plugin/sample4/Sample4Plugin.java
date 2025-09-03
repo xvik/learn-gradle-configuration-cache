@@ -17,7 +17,7 @@ public class Sample4Plugin implements Plugin<Project> {
         project.getTasks().register("task1").configure(task -> {
             Provider<String> provider = project.provider(() -> {
                 String res = String.valueOf(project.findProperty("startTime"));
-                System.out.println("[configuration] Provider called: " + res);
+                System.out.println("Provider called: " + res);
                 return res;
             });
             task.doLast(task1 -> {

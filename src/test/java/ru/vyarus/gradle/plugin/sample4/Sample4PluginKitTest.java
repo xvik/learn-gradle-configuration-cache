@@ -27,11 +27,26 @@ public class Sample4PluginKitTest extends AbstractKitTest {
                 }
                 """);
 
+        // WHEN simple run
+        BuildResult result = run("task1", "-PstartTime=1");
+
+        // THEN provider called at runtime
+        String out = result.getOutput();
+        Assertions.assertThat(out).contains("""
+                        > Task :task1
+                        called computeMessage('static')
+                        Task exec / static value: Computed message: static
+                        Provider called: 1
+                        called computeMessage('provider 1')
+                        Task exec / provider value: Computed message: provider 1
+                        """);
+
         // WHEN run without cache
-        BuildResult result = run("task1", "-PstartTime=1", "--configuration-cache", "--configuration-cache-problems=warn");
+        System.out.println("\n\n------------------- CACHE ENABLED ----------------------------------------");
+        result = run("task1", "-PstartTime=1", "--configuration-cache", "--configuration-cache-problems=warn");
 
         // THEN cache not used
-        String out = result.getOutput();
+        out = result.getOutput();
         Assertions.assertThat(out).contains(
                 "Calculating task graph as no cached configuration is available for tasks:",
                 "Configuration cache entry stored.");
