@@ -1,4 +1,4 @@
-# Build cache
+# Listen cached task
 
 It's not directly related to the configuration cache, but it's important to remember.
 [Build cache](https://docs.gradle.org/current/userguide/build_cache.html) may be used together with configuration cache.
@@ -9,7 +9,7 @@ For example, you may want to react after some 3rd party task. To do it, you conf
 block, but it would not work as `doFirst`/`doLast` are also **not executed for UP-TO-DATE** tasks 
 (when output taken from cache).
 
-The only way to react on UP-TO-DATE tasks is to use build service with `OperationCompletionListener`
+The only way to react on UP-TO-DATE (FROM-CACHE) tasks is to use build service with `OperationCompletionListener`
 (but it would provide ONLY task path, so, if you need to access any task properties, it must be 
 done in configuration time by storing it somewhere).
 

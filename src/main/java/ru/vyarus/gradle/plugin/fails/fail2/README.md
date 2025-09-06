@@ -51,6 +51,11 @@ FAILURE: Build failed with an exception.
 Execution failed for task ':fail2Task'.
 > Cannot invoke "org.gradle.api.Project.getName()" because "project" is null
 
+* Exception is:
+org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':fail2Task'.
+...	
+Caused by: java.lang.NullPointerException: Cannot invoke "org.gradle.api.Project.getName()" because "project" is null
+...
 
 BUILD FAILED in 3s
 1 actionable task: 1 executed
@@ -85,3 +90,22 @@ project.getTasks().register("fail2Fix2", task ->  {
             System.out.println("[run] Project name: " + nameProvider.get()));
 });
 ```
+
+Running `fail2Fix fail2Fix2 --configuration-cache --configuration-cache-problems=warn`:
+
+```
+Calculating task graph as no cached configuration is available for tasks: fail2Fix fail2Fix2
+[configuration] Provider called
+
+> Task :fail2Fix2
+[run] Project name: junit17295962152626235093
+
+> Task :fail2Fix
+[run] Project name: junit17295962152626235093
+
+BUILD SUCCESSFUL in 3s
+2 actionable tasks: 2 executed
+Configuration cache entry stored.
+```
+
+(the order of tasks is not determinate as they run in parallel)

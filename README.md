@@ -40,7 +40,7 @@ can't remember its state (changed during configuration), but gradle could cache 
 points, so there is (probably) no need to maintain the correct state.
 7. [Build service parameter](src/main/java/ru/vyarus/gradle/plugin/sample7/) state, collected under configuration phase
 could be stored in the build service parameter (but with a caveat)
-8. [Build cache](src/main/java/ru/vyarus/gradle/plugin/sample8/) might be used together with the configuration cache,
+8. [Listen cached task](src/main/java/ru/vyarus/gradle/plugin/sample8/) might be used together with the configuration cache,
 but this might lead to not executed `doFirst`/`doLast` blocks (on which you could rely on). Service could workaround this
 limitation.
 9. [Multi module projects](src/main/java/ru/vyarus/gradle/plugin/sample9/) pays attention to multi-module

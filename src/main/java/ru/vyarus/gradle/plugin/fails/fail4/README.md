@@ -95,7 +95,7 @@ public class Fail4FixTask extends DefaultTask {
 }
 ```
 
-There would be no problems anymore:
+There would be no problems anymore `fail4Fix  --configuration-cache --configuration-cache-problems=warn`:
 
 ```
 Calculating task graph as no cached configuration is available for tasks: fail4Fix

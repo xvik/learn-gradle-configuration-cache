@@ -67,7 +67,7 @@ Note that there are no hints about the source of the problem - you must guess it
 
 ## Fix
 
-To fix this problem, assign required data to variable in configuration phase:
+To fix this problem, assign required data to variable in the configuration phase:
 
 ```java
 @Override
