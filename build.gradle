@@ -95,6 +95,14 @@ gradlePlugin {
             id = "ru.vyarus.fail3fix"
             implementationClass = "ru.vyarus.gradle.plugin.fails.fail3.fix.Fail3FixPlugin"
         }
+        create("fail4") {
+            id = "ru.vyarus.fail4"
+            implementationClass = "ru.vyarus.gradle.plugin.fails.fail4.Fail4Plugin"
+        }
+        create("fail4fix") {
+            id = "ru.vyarus.fail4fix"
+            implementationClass = "ru.vyarus.gradle.plugin.fails.fail4.fix.Fail4FixPlugin"
+        }
     }
 }
 
