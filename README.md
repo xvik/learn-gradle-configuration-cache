@@ -49,6 +49,13 @@ projects side effects (which must be also counted)
 For each sample a test output is present in readme. But you can run tests yourself 
 (with modifications or other gradle versions).
 
+## Fail cases
+
+1. [Project usage in task](src/main/java/ru/vyarus/gradle/plugin/fails/fail1/) shows that project can't be used at runtime
+2. [Project usage in plugin](src/main/java/ru/vyarus/gradle/plugin/fails/fail2/) shows that project can't be used at runtime block
+3. [Serialization problem](src/main/java/ru/vyarus/gradle/plugin/fails/fail3/) shows too broad serialization problem
+4. [Task and plugin serialization difference](src/main/java/ru/vyarus/gradle/plugin/fails/fail4/) shows the difference between tasks and plugins serialization
+
 ## Implementation details
 
 Requires java 17 (multiline strings used to simplify tests).

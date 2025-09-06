@@ -1,4 +1,4 @@
-# Task and plugin difference
+# Task and plugin serialization difference
 
 Tasks and plugins are serialized differently!
 
