@@ -71,6 +71,30 @@ gradlePlugin {
             id = "ru.vyarus.sample9"
             implementationClass = "ru.vyarus.gradle.plugin.sample9.Sample9Plugin"
         }
+        create("fail1") {
+            id = "ru.vyarus.fail1"
+            implementationClass = "ru.vyarus.gradle.plugin.fails.fail1.Fail1Plugin"
+        }
+        create("fail1fix") {
+            id = "ru.vyarus.fail1fix"
+            implementationClass = "ru.vyarus.gradle.plugin.fails.fail1.fix.Fail1FixPlugin"
+        }
+        create("fail2") {
+            id = "ru.vyarus.fail2"
+            implementationClass = "ru.vyarus.gradle.plugin.fails.fail2.Fail2Plugin"
+        }
+        create("fail2fix") {
+            id = "ru.vyarus.fail2fix"
+            implementationClass = "ru.vyarus.gradle.plugin.fails.fail2.fix.Fail2FixPlugin"
+        }
+        create("fail3") {
+            id = "ru.vyarus.fail3"
+            implementationClass = "ru.vyarus.gradle.plugin.fails.fail3.Fail3Plugin"
+        }
+        create("fail3fix") {
+            id = "ru.vyarus.fail3fix"
+            implementationClass = "ru.vyarus.gradle.plugin.fails.fail3.fix.Fail3FixPlugin"
+        }
     }
 }
 
