@@ -12,6 +12,12 @@ Useful links:
 * [Build services](https://docs.gradle.org/current/userguide/build_services.html)
 * [Gradle services](https://docs.gradle.org/current/userguide/service_injection.html#service_injection)
 
+
+Based on this repo, the article was written (in two parts):
+
+* [Gradle configuration cache by example. Part 1: behaviour](https://blog.vyarus.ru/gradle-configuration-cache-by-example-part-1-behavior)
+* [Gradle configuration cache by example. Part 2: problems](https://blog.vyarus.ru/gradle-configuration-cache-by-example-part-2-problems)
+
 ## TL;DR
 
 * You can do whatever you want at *configuration* time. You are limited at *execution* time
