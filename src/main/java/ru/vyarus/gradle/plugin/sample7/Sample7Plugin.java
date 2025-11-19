@@ -22,6 +22,7 @@ public class Sample7Plugin implements Plugin<Project> {
 
         Provider<Service> service = project.getGradle().getSharedServices().registerIfAbsent(
                 "service", Service.class, spec -> {
+                    System.out.println("[configuration] Creating service");
                     // initial "persisted storage" value
                     spec.getParameters().getValues().value(values);
                 });
