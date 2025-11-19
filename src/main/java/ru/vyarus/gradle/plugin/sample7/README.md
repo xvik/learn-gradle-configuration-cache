@@ -38,7 +38,7 @@ public class Sample7Plugin implements Plugin<Project> {
 
         Provider<Service> service = project.getGradle().getSharedServices().registerIfAbsent(
                 "service", Service.class, spec -> {
-                    System.out.println("[configuration] Creating service");
+                    System.out.println("[configuration] Initial service configuration");
                     // initial "persisted storage" value
                     spec.getParameters().getValues().value(values);
                 });
@@ -69,7 +69,7 @@ initialization would save the state.
 Calculating task graph as no cached configuration is available for tasks: sample7Task
 
 > Configure project :
-[configuration] Creating service
+[configuration] Initial service configuration
 
 > Task :sample7Task
 Service created with state: [val1, val2]
