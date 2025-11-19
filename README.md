@@ -51,6 +51,8 @@ but this might lead to not executed `doFirst`/`doLast` blocks (on which you coul
 limitation.
 9. [Multi module projects](src/main/java/ru/vyarus/gradle/plugin/sample9/) pays attention to multi-module
 projects side effects (which must be also counted)
+10. [Real life case](src/main/java/ru/vyarus/gradle/plugin/sample10/) shows how to collect tasks state in
+value objects and use it in build service task listener
 
 For each sample a test output is present in readme. But you can run tests yourself 
 (with modifications or other gradle versions).
