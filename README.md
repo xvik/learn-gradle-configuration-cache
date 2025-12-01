@@ -18,6 +18,11 @@ Based on this repo, the article was written (in two parts):
 * [Gradle configuration cache by example. Part 1: behaviour](https://blog.vyarus.ru/gradle-configuration-cache-by-example-part-1-behavior)
 * [Gradle configuration cache by example. Part 2: problems](https://blog.vyarus.ru/gradle-configuration-cache-by-example-part-2-problems)
 
+Русская доработанная версия (Habr):
+
+* [Gradle configuration cache на примерах. Часть 1: поведение](https://habr.com/ru/articles/965126/)
+* [Gradle configuration cache на примерах. Часть 2: практика](https://habr.com/ru/articles/967242/)
+
 ## TL;DR
 
 * You can do whatever you want at *configuration* time. You are limited at *execution* time
